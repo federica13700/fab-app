@@ -9,6 +9,27 @@ st.set_page_config(
 )
 
 
+st.markdown(
+    """
+    /* Background color for the entire app */
+    <style>
+    .stApp {
+        background-color: #a18462; 
+    }
+
+    /* Caption text size */
+    [data-testid="stCaptionContainer"] p {
+        font-size: 1.1rem !important; 
+    }
+    """,
+    unsafe_allow_html=True,
+)
+
+# Application Title & Information Note
+st.title("🧬 Drug-Disease Link Predictor")
+st.caption(
+    "Predictions were generated based on Probabilistic Network Inference."
+)
 # 1. Load JSON data files with caching to optimize performance
 @st.cache_data
 def load_data():
@@ -32,11 +53,7 @@ def load_data():
 # Load data into memory
 drugs_data, diseases_data = load_data()
 
-# Application Title & Information Note
-st.title("🧬 Drug-Disease Link Predictor")
-st.caption(
-    "Predictions were generated based on Probabilistic Network Inference."
-)
+
 
 # 2. Search mode selection
 search_mode = st.radio(
@@ -45,7 +62,7 @@ search_mode = st.radio(
     horizontal=True,
 )
 
-# 3. Dropdown menu and prediction results table display
+# 3. Dropdown menu with clear button ("X") and prediction results table display
 if search_mode == "Search by Disease":
     if not diseases_data:
         st.error(
@@ -53,10 +70,13 @@ if search_mode == "Search by Disease":
         )
     else:
         disease_list = sorted(list(diseases_data.keys()))
+
+        # Setting index=None adds an 'X' clear button inside the selectbox
         selected_disease = st.selectbox(
             "Select a Disease from the dropdown menu:",
             options=disease_list,
-            index=0,
+            index=None,
+            placeholder="Type or select a disease to search...",
         )
 
         if selected_disease:
@@ -83,10 +103,13 @@ else:
         )
     else:
         drug_list = sorted(list(drugs_data.keys()))
+
+        # Setting index=None adds an 'X' clear button inside the selectbox
         selected_drug = st.selectbox(
             "Select a Drug from the dropdown menu:",
             options=drug_list,
-            index=0,
+            index=None,
+            placeholder="Type or select a drug to search...",
         )
 
         if selected_drug:
@@ -117,10 +140,24 @@ st.sidebar.info(
 # --- MAIN PAGE FOOTER ---
 st.markdown("---")
 st.markdown(
-    "<div style='text-align: center; color: #666; font-size: 0.9em;'>"
-    "Master's Thesis Project<br>"
-    "🔗 <a href='https://github.com/federica13700' target='_blank'>GitHub Profile</a> • "
-    "📁 <a href='https://github.com/federica13700/fab-app' target='_blank'>Project Repository</a>"
-    "</div>",
+    """
+    <div style="
+        background-color: #f5dfc6;
+        padding: 20px;
+        border-radius: 12px;
+        border: 1px solid #EAE6DF;
+        text-align: center;
+        margin-top: 30px;
+    ">
+        <p style="color: #31333F; margin: 0; font-size: 1rem; font-weight: 500;">
+            Developed by <b>Federica</b> | Master's Thesis Project
+        </p>
+        <p style="margin: 8px 0 0 0; font-size: 0.95rem;">
+            🔗 <a href="https://github.com/federica13700" target="_blank" style="color: #0066cc; text-decoration: none;">GitHub Profile</a>
+            &nbsp;•&nbsp;
+            📁 <a href="https://github.com/federica13700/fab-app" target="_blank" style="color: #0066cc; text-decoration: none;">Project Repository</a>
+        </p>
+    </div>
+    """,
     unsafe_allow_html=True,
 )
