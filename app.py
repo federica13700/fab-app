@@ -3,34 +3,44 @@ from pathlib import Path
 import pandas as pd
 import streamlit as st
 
-# Streamlit page configuration
+# Configurazione della pagina Streamlit
 st.set_page_config(
     page_title="Drug-Disease Link Predictor", page_icon="🧬", layout="wide"
 )
 
-
+# --- STILE CSS PERSONALIZZATO (Sicuro per Streamlit Cloud) ---
 st.markdown(
     """
     <style>
-        /* Background color for the entire app */
+    /* Sfondo principale dell'applicazione (Tortora chiaro) */
     .stApp {
-        background-color: #a18462; 
+        background-color: #cbb396;
     }
 
-    /* Caption text size */
-    [data-testid="stCaptionContainer"] p {
-        font-size: 1.1rem !important; 
+    /* Supporto tema Light del sistema/browser */
+    @media (prefers-color-scheme: light) {
+        .stApp {
+            background-color: #debd97;
+        }
     }
+
+    /* Dimensione font per la caption */
+    [data-testid="stCaptionContainer"] p {
+        font-size: 1.1rem !important;
+    }
+    </style>
     """,
     unsafe_allow_html=True,
 )
 
-# Application Title & Information Note
+# Titolo dell'applicazione e nota informativa
 st.title("🧬 Drug-Disease Link Predictor")
 st.caption(
     "Predictions were generated based on Probabilistic Network Inference."
 )
-# 1. Load JSON data files with caching to optimize performance
+
+
+# 1. Caricamento dati JSON con cache per ottimizzare le prestazioni
 @st.cache_data
 def load_data():
     drugs_file = Path("drugs.json")
@@ -50,19 +60,18 @@ def load_data():
     return drugs_data, diseases_data
 
 
-# Load data into memory
+# Caricamento in memoria dei dati
 drugs_data, diseases_data = load_data()
 
 
-
-# 2. Search mode selection
+# 2. Selezione modalità di ricerca
 search_mode = st.radio(
     "Select search mode:",
     options=["Search by Disease", "Search by Drug"],
     horizontal=True,
 )
 
-# 3. Dropdown menu with clear button ("X") and prediction results table display
+# 3. Menu a tendina con pulsante di cancellazione ("X") e tabella dei risultati
 if search_mode == "Search by Disease":
     if not diseases_data:
         st.error(
@@ -71,7 +80,7 @@ if search_mode == "Search by Disease":
     else:
         disease_list = sorted(list(diseases_data.keys()))
 
-        # Setting index=None adds an 'X' clear button inside the selectbox
+        # index=None aggiunge il pulsante 'X' per cancellare la selezione
         selected_disease = st.selectbox(
             "Select a Disease from the dropdown menu:",
             options=disease_list,
@@ -87,7 +96,7 @@ if search_mode == "Search by Disease":
 
             if predictions:
                 df = pd.DataFrame(predictions)
-                # Hide prediction scores from the output table
+                # Nascoste le colonne del punteggio dalla tabella finale
                 if "score" in df.columns:
                     df = df.drop(columns=["score"])
 
@@ -104,7 +113,7 @@ else:
     else:
         drug_list = sorted(list(drugs_data.keys()))
 
-        # Setting index=None adds an 'X' clear button inside the selectbox
+        # index=None aggiunge il pulsante 'X' per cancellare la selezione
         selected_drug = st.selectbox(
             "Select a Drug from the dropdown menu:",
             options=drug_list,
@@ -120,7 +129,7 @@ else:
 
             if predictions:
                 df = pd.DataFrame(predictions)
-                # Hide prediction scores from the output table
+                # Nascoste le colonne del punteggio dalla tabella finale
                 if "score" in df.columns:
                     df = df.drop(columns=["score"])
 
@@ -130,6 +139,7 @@ else:
                 st.info("No predictions found for the selected drug.")
 
 
+# Sidebar laterale
 st.sidebar.title("About fab-app")
 st.sidebar.info(
     "**Drug-Disease Link Predictor** is an interactive tool for drug repurposing based on Probabilistic Network Inference. "
@@ -137,7 +147,7 @@ st.sidebar.info(
     "Stochastic Block Model (nDCSBM) on a bipartite network."
 )
 
-# --- MAIN PAGE FOOTER ---
+# --- FOOTER IN FONDO ALLA PAGINA ---
 st.markdown("---")
 st.markdown(
     """
