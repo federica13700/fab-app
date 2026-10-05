@@ -3,41 +3,16 @@ from pathlib import Path
 import pandas as pd
 import streamlit as st
 
-# Configurazione della pagina Streamlit
+# Configurazione standard della pagina
 st.set_page_config(
-    page_title="Drug-Disease Link Predictor", page_icon="🧬", layout="wide"
+    page_title="Drug-Disease Link Predictor",
+    page_icon="🧬",
+    layout="wide",
 )
 
-# --- STILE CSS PERSONALIZZATO (Sicuro per Streamlit Cloud) ---
-st.markdown(
-    """
-    <style>
-    /* Sfondo principale dell'applicazione (Tortora chiaro) */
-    .stApp {
-        background-color: #cbb396;
-    }
-
-    /* Supporto tema Light del sistema/browser */
-    @media (prefers-color-scheme: light) {
-        .stApp {
-            background-color: #debd97;
-        }
-    }
-
-    /* Dimensione font per la caption */
-    [data-testid="stCaptionContainer"] p {
-        font-size: 1.1rem !important;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
-
-# Titolo dell'applicazione e nota informativa
+# Titolo e sottotitolo
 st.title("🧬 Drug-Disease Link Predictor")
-st.caption(
-    "Predictions were generated based on Probabilistic Network Inference."
-)
+st.caption("Predictions were generated based on Probabilistic Network Inference.")
 
 
 # 1. Caricamento dati JSON con cache per ottimizzare le prestazioni
@@ -60,9 +35,8 @@ def load_data():
     return drugs_data, diseases_data
 
 
-# Caricamento in memoria dei dati
+# Carica i dati in memoria
 drugs_data, diseases_data = load_data()
-
 
 # 2. Selezione modalità di ricerca
 search_mode = st.radio(
@@ -71,16 +45,12 @@ search_mode = st.radio(
     horizontal=True,
 )
 
-# 3. Menu a tendina con pulsante di cancellazione ("X") e tabella dei risultati
+# 3. Logica di ricerca e visualizzazione risultati
 if search_mode == "Search by Disease":
     if not diseases_data:
-        st.error(
-            "File 'diseases.json' was not found or is empty in the current directory."
-        )
+        st.error("File 'diseases.json' was not found or is empty in the current directory.")
     else:
         disease_list = sorted(list(diseases_data.keys()))
-
-        # index=None aggiunge il pulsante 'X' per cancellare la selezione
         selected_disease = st.selectbox(
             "Select a Disease from the dropdown menu:",
             options=disease_list,
@@ -90,13 +60,10 @@ if search_mode == "Search by Disease":
 
         if selected_disease:
             predictions = diseases_data.get(selected_disease, [])
-            st.subheader(
-                f"Predicted Candidate Drugs for: **{selected_disease}**"
-            )
+            st.subheader(f"Predicted Candidate Drugs for: **{selected_disease}**")
 
             if predictions:
                 df = pd.DataFrame(predictions)
-                # Nascoste le colonne del punteggio dalla tabella finale
                 if "score" in df.columns:
                     df = df.drop(columns=["score"])
 
@@ -107,13 +74,9 @@ if search_mode == "Search by Disease":
 
 else:
     if not drugs_data:
-        st.error(
-            "File 'drugs.json' was not found or is empty in the current directory."
-        )
+        st.error("File 'drugs.json' was not found or is empty in the current directory.")
     else:
         drug_list = sorted(list(drugs_data.keys()))
-
-        # index=None aggiunge il pulsante 'X' per cancellare la selezione
         selected_drug = st.selectbox(
             "Select a Drug from the dropdown menu:",
             options=drug_list,
@@ -123,13 +86,10 @@ else:
 
         if selected_drug:
             predictions = drugs_data.get(selected_drug, [])
-            st.subheader(
-                f"Predicted Candidate Diseases for: **{selected_drug}**"
-            )
+            st.subheader(f"Predicted Candidate Diseases for: **{selected_drug}**")
 
             if predictions:
                 df = pd.DataFrame(predictions)
-                # Nascoste le colonne del punteggio dalla tabella finale
                 if "score" in df.columns:
                     df = df.drop(columns=["score"])
 
@@ -137,7 +97,6 @@ else:
                 st.dataframe(df, use_container_width=True)
             else:
                 st.info("No predictions found for the selected drug.")
-
 
 # Sidebar laterale
 st.sidebar.title("About fab-app")
@@ -147,25 +106,16 @@ st.sidebar.info(
     "Stochastic Block Model (nDCSBM) on a bipartite network."
 )
 
-# --- FOOTER IN FONDO ALLA PAGINA ---
+# Footer minimale standard
 st.markdown("---")
 st.markdown(
     """
-    <div style="
-        background-color: #f5dfc6;
-        padding: 20px;
-        border-radius: 12px;
-        border: 1px solid #EAE6DF;
-        text-align: center;
-        margin-top: 30px;
-    ">
-        <p style="color: #31333F; margin: 0; font-size: 1rem; font-weight: 500;">
-            Developed by <b>Federica</b> | Master's Thesis Project
-        </p>
-        <p style="margin: 8px 0 0 0; font-size: 0.95rem;">
-            🔗 <a href="https://github.com/federica13700" target="_blank" style="color: #0066cc; text-decoration: none;">GitHub Profile</a>
+    <div style="text-align: center; padding: 10px;">
+        <p style="margin: 0;">Developed by <b>Federica</b> | Master's Thesis Project</p>
+        <p style="margin: 5px 0 0 0;">
+            🔗 <a href="https://github.com/federica13700" target="_blank">GitHub Profile</a>
             &nbsp;•&nbsp;
-            📁 <a href="https://github.com/federica13700/fab-app" target="_blank" style="color: #0066cc; text-decoration: none;">Project Repository</a>
+            📁 <a href="https://github.com/federica13700/fab-app" target="_blank">Project Repository</a>
         </p>
     </div>
     """,
