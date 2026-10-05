@@ -3,7 +3,7 @@ from pathlib import Path
 import pandas as pd
 import streamlit as st
 
-# Configurazione standard della pagina
+# Configurazione della pagina
 st.set_page_config(
     page_title="Drug-Disease Link Predictor",
     page_icon="🧬",
@@ -15,7 +15,7 @@ st.title("🧬 Drug-Disease Link Predictor")
 st.caption("Predictions were generated based on Probabilistic Network Inference.")
 
 
-# 1. Caricamento dati JSON con cache per ottimizzare le prestazioni
+# Caricamento dati JSON
 @st.cache_data
 def load_data():
     drugs_file = Path("drugs.json")
@@ -35,30 +35,28 @@ def load_data():
     return drugs_data, diseases_data
 
 
-# Carica i dati in memoria
+# Carica i dati
 drugs_data, diseases_data = load_data()
 
-# 2. Selezione modalità di ricerca
+# Selezione modalità di ricerca
 search_mode = st.radio(
     "Select search mode:",
     options=["Search by Disease", "Search by Drug"],
     horizontal=True,
 )
 
-# 3. Logica di ricerca e visualizzazione risultati
+# Ricerca per Malattia
 if search_mode == "Search by Disease":
     if not diseases_data:
         st.error("File 'diseases.json' was not found or is empty in the current directory.")
     else:
-        disease_list = sorted(list(diseases_data.keys()))
+        disease_list = ["-- Select a Disease --"] + sorted(list(diseases_data.keys()))
         selected_disease = st.selectbox(
             "Select a Disease from the dropdown menu:",
             options=disease_list,
-            index=None,
-            placeholder="Type or select a disease to search...",
         )
 
-        if selected_disease:
+        if selected_disease and selected_disease != "-- Select a Disease --":
             predictions = diseases_data.get(selected_disease, [])
             st.subheader(f"Predicted Candidate Drugs for: **{selected_disease}**")
 
@@ -72,19 +70,18 @@ if search_mode == "Search by Disease":
             else:
                 st.info("No predictions found for the selected disease.")
 
+# Ricerca per Farmaco
 else:
     if not drugs_data:
         st.error("File 'drugs.json' was not found or is empty in the current directory.")
     else:
-        drug_list = sorted(list(drugs_data.keys()))
+        drug_list = ["-- Select a Drug --"] + sorted(list(drugs_data.keys()))
         selected_drug = st.selectbox(
             "Select a Drug from the dropdown menu:",
             options=drug_list,
-            index=None,
-            placeholder="Type or select a drug to search...",
         )
 
-        if selected_drug:
+        if selected_drug and selected_drug != "-- Select a Drug --":
             predictions = drugs_data.get(selected_drug, [])
             st.subheader(f"Predicted Candidate Diseases for: **{selected_drug}**")
 
@@ -98,7 +95,7 @@ else:
             else:
                 st.info("No predictions found for the selected drug.")
 
-# Sidebar laterale
+# Sidebar
 st.sidebar.title("About fab-app")
 st.sidebar.info(
     "**Drug-Disease Link Predictor** is an interactive tool for drug repurposing based on Probabilistic Network Inference. "
@@ -106,7 +103,7 @@ st.sidebar.info(
     "Stochastic Block Model (nDCSBM) on a bipartite network."
 )
 
-# Footer minimale standard
+# Footer
 st.markdown("---")
 st.markdown(
     """
