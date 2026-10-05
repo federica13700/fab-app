@@ -11,8 +11,8 @@ st.set_page_config(
 
 st.markdown(
     """
-    /* Background color for the entire app */
     <style>
+        /* Background color for the entire app */
     .stApp {
         background-color: #a18462; 
     }
